@@ -45,15 +45,19 @@ public class Chaining {
 
     /**Implements the hash function h(k)*/
     public int chain (int key) {
-        // TODO: implement this and change the return statement
-        return -1;
+        // Using multiplication method
+        int value = ((A*key) % power2(w)) >> (w-r);
+        return value;
     }
         
     
     /**Inserts key k into hash table. Returns the number of collisions encountered*/
     public int insertKey(int key){
-        //TODO: implement this and change the return statement
-        return -1;
+        // Number of other keys in the same bin = number of collisions
+        ArrayList<Integer> arrayList = (Table.get(key));
+        arrayList.add(chain(key),key);
+        int numberOfElement = arrayList.size();
+        return (numberOfElement - 1);
 
     }
 
