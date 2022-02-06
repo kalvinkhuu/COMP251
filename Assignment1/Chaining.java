@@ -54,8 +54,8 @@ public class Chaining {
     /**Inserts key k into hash table. Returns the number of collisions encountered*/
     public int insertKey(int key){
         // Number of other keys in the same bin = number of collisions
-        ArrayList<Integer> arrayList = (Table.get(key));
-        arrayList.add(chain(key),key);
+        ArrayList<Integer> arrayList = (Table.get(chain(key)));
+        arrayList.add(key);
         int numberOfElement = arrayList.size();
         return (numberOfElement - 1);
 
