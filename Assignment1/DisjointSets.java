@@ -54,9 +54,12 @@ public class DisjointSets {
     
     /* find resentative of element i */
     public int find(int i) {
-
-        /* Fill this method (The statement return 0 is here only to compile) */
-        return 0;
+        if (par[i] == i){
+            return i;
+        }
+        else{
+            return find(par[i]);
+        }
         
     }
 
@@ -64,8 +67,11 @@ public class DisjointSets {
     public int union(int i, int j) {
     
         /* Fill this method (The statement return 0 is here only to compile) */
-        return 0;
-        
+        if(find(i) != find(j)){
+            par[find(i)] = find(j);
+            return j;
+        }
+        return i;
     }
     
     public static void main(String[] args) {

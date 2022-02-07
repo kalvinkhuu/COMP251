@@ -52,7 +52,7 @@ public class Open_Addressing {
         public int insertKey(int key){
             int counterProb = 0;
             int indexArray = probe(key,counterProb);
-            while (Table[indexArray] != -1){
+            while (Table[indexArray] != -1 || Table[indexArray] != -2){
                 counterProb++;
                 indexArray = probe(key,counterProb);
                 if (counterProb >= m) {
@@ -80,11 +80,11 @@ public class Open_Addressing {
             while (Table[indexArray] != key){
                 counterProb++;
                 indexArray = probe(key,counterProb);
-                if (counterProb >= m) {
-                    return counterProb;
+                if (counterProb == m || Table[indexArray] < 0) {
+                    return counterProb+1;
                 }
             }
-            Table[indexArray] = -1;
+            Table[indexArray] = -2;
 
             return counterProb;
         }
