@@ -70,7 +70,7 @@ public class DisjointSets {
         /* Fill this method (The statement return 0 is here only to compile) */
         int valueI = find(i);
         int valueJ = find(j);
-//        if (valueI == valueJ){return valueI;}
+        if (valueI == valueJ){return valueI;}
 
         int rankI = rank[valueI];
         int rankJ = rank[valueJ];
@@ -85,7 +85,7 @@ public class DisjointSets {
         }
         else{
             par[valueI] = valueJ;
-            rankJ++;
+            rank[valueJ]++;
             return valueJ;
         }
 
@@ -117,4 +117,5 @@ public class DisjointSets {
     }
 
 }
+
 
