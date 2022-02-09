@@ -56,6 +56,8 @@ public class A1_Q3 {
 				output the final results
 		 */
 
+		// TODO: Implement using TreeMap
+
 		HashMap<String, HashMap<String,Integer>> wordsOfUsers = new LinkedHashMap<>();
 		Set<String> wordsUsed = new HashSet<>();
 		Set<String>	users = new HashSet<>();
