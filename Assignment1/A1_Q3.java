@@ -11,7 +11,7 @@ public class A1_Q3 {
 		Set<String> wordsUsed = new HashSet<>();
 		Set<String>	users = new HashSet<>();
 
-		// Splits the posts by each words and adds 
+		// Makes a map of users and their words with their frequency
 		for(int i = 0; i < posts.length; i++){
 			String[] temp = posts[i].split(" ");
 			HashMap<String, Integer> wordsRecurrence = new LinkedHashMap<>();
@@ -42,6 +42,8 @@ public class A1_Q3 {
 			}
 			users.add(temp[0]);
 		}
+
+		// Finds the words that all users said with their total frequency
 		HashMap<String,Integer> finalWordsWithRecurrences = new LinkedHashMap<>() ;
 		Set<String> wordsEveryoneSaid = new HashSet<>();
 		for (String w: wordsUsed) {
@@ -54,7 +56,6 @@ public class A1_Q3 {
 					break;
 				}
 				counterOfRepetition += wordsOfUsers.get(u).get(w);
-
 			}
 			if(counterOfRepetition != 0){
 				finalWordsWithRecurrences.put(w, counterOfRepetition);
@@ -62,6 +63,7 @@ public class A1_Q3 {
 
 		}
 
+		// Sorts the words if frequency is the same
 		List<Map.Entry<String,Integer>> toSortList = new LinkedList(finalWordsWithRecurrences.entrySet());
 		toSortList.sort(Map.Entry.comparingByValue());
 		for (int i = 0; i < toSortList.size() - 1; i++) {
@@ -77,22 +79,24 @@ public class A1_Q3 {
 
 
 
+		// Tests prints
+//		System.out.println("All the words with corresponding users: " + wordsOfUsers);
+//		System.out.println("All words written: "+ wordsUsed);
+//		System.out.println("All users: " + users);
+//		System.out.println("Final words: " + wordsEveryoneSaid);
+//		System.out.println("Final words with reccurences: " + finalWordsWithRecurrences);
+//		System.out.println("Final sorted words: " + toSortList);
 
-		System.out.println("All the words with corresponding users: " + wordsOfUsers);
-		System.out.println("All words written: "+ wordsUsed);
-		System.out.println("All users: " + users);
-		System.out.println("Final words: " + wordsEveryoneSaid);
-		System.out.println("Final words with reccurences: " + finalWordsWithRecurrences);
-		System.out.println("Final sorted words: " + toSortList);
-
+		// Return the expected values
 		if (toSortList.size() == 0){
 			return new ArrayList<>();
 		}
 		else{
 			ArrayList<String> result = new ArrayList<>();
 			int sizeOfWords = toSortList.size();
+			// If the final word list is less than 3 elements, this while loop checks for it
 			while (sizeOfWords > 0){
-				result.add(toSortList.get(sizeOfWords -1).getKey());
+				result.add(toSortList.get(sizeOfWords-1).getKey());
 				sizeOfWords--;
 				if (toSortList.size() - sizeOfWords == 3){
 					break;
