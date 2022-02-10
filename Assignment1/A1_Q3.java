@@ -4,9 +4,6 @@ public class A1_Q3 {
 	
 	public static ArrayList<String> Discussion_Board(String[] posts){
 
-
-		// TODO: Implement using TreeMap
-
 		HashMap<String, HashMap<String,Integer>> wordsOfUsers = new LinkedHashMap<>();
 		Set<String> wordsUsed = new HashSet<>();
 		Set<String>	users = new HashSet<>();
@@ -94,20 +91,12 @@ public class A1_Q3 {
 		else{
 			ArrayList<String> result = new ArrayList<>();
 			int sizeOfWords = toSortList.size();
-			// If the final word list is less than 3 elements, this while loop checks for it
 			while (sizeOfWords > 0){
 				result.add(toSortList.get(sizeOfWords-1).getKey());
 				sizeOfWords--;
-				if (toSortList.size() - sizeOfWords == 3){
-					break;
-				}
 			}
-
 			return result;
 		}
-
-
-
 
 	}
 

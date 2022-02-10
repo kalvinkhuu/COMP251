@@ -54,6 +54,7 @@ public class DisjointSets {
 
     /* find resentative of element i */
     public int find(int i) {
+        // path compression
         if (par[i] == i){
             return i;
         }
@@ -67,14 +68,17 @@ public class DisjointSets {
     /* merge sets containing elements i and j */
     public int union(int i, int j) {
 
-        /* Fill this method (The statement return 0 is here only to compile) */
         int valueI = find(i);
         int valueJ = find(j);
-        if (valueI == valueJ){return valueI;}
+        // In the same sets
+        if (valueI == valueJ){
+            return valueI;
+        }
 
         int rankI = rank[valueI];
         int rankJ = rank[valueJ];
 
+        // Merging the smaller sets into the bigger sets
         if (rankI > rankJ){
             par[valueJ] = valueI;
             return valueI;
@@ -84,6 +88,7 @@ public class DisjointSets {
             return valueJ;
         }
         else{
+            // Same size, need to update the rank
             par[valueI] = valueJ;
             rank[valueJ]++;
             return valueJ;
