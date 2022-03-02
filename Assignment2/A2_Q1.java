@@ -5,66 +5,80 @@ import java.util.*;
 public class A2_Q1 {
 
     public static int[] game(String[][] board){
-        // [Minimum number of balls that remains in the board, Minimum number of moves performed]
-        // String[Height][Width] = "." | "o" | "#"
-        ArrayList<int[]> possiblesSolutions = new ArrayList<>();
-        int width = board.length;
-        int height = board[0].length;
-        int numberOfBalls = 0;
-        int numberOfMovements = 0;
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                if(board[i][j].equals("o")) {
-                    numberOfBalls = numberOfBalls+1;
-                    try{
-                        if (board[i+1][j].equals("o") && board[i+2][j].equals(".")){
-                            board[i][j] = ".";
-                            board[i+1][j] = ".";
-                            board[i+2][j] = "o";
-                            numberOfMovements = numberOfMovements+1;
-                            possiblesSolutions.add(game(board));
-                        }
-                    }catch (Exception e ){}
-                    try{
-                        if (board[i-1][j].equals("o") && board[i-2][j].equals(".")){
-                            board[i][j] = ".";
-                            board[i-1][j] = ".";
-                            board[i-2][j] = "o";
-                            numberOfMovements = numberOfMovements+1;
-                            possiblesSolutions.add(game(board));
 
-                        }
-                    }catch (Exception e ){}
-                    try{
-                        if (board[i][j+1].equals("o") && board[i][j+2].equals(".")){
-                            board[i][j] = ".";
-                            board[i][j+1] = ".";
-                            board[i][j+2] = "o";
-                            numberOfMovements = numberOfMovements+1;
-                            possiblesSolutions.add(game(board));
-                        }
-                    }catch (Exception e ){}
-                    try{
-                        if (board[i][j-1].equals("o") && board[i][j-2].equals(".")){
-                            board[i][j] = ".";
-                            board[i][j-1] = ".";
-                            board[i][j-2] = "o";
-                            numberOfMovements = numberOfMovements+1;
-                            possiblesSolutions.add(game(board));
-                        }
-                    }catch (Exception e){}
-
+        int balls = 0;
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                if (board[i][j].equals("o")){
+                    balls++;
                 }
             }
         }
-        if(possiblesSolutions.isEmpty())
-        {
-            int[] finalResults = {numberOfBalls, numberOfMovements};
-            return finalResults;
+
+        return recursiveGame(board,0, 0, balls, 0);
+
+    }
+
+    public static int[] recursiveGame(String[][] board, int positionX, int positionY,
+                                      int balls, int jumps){
+
+        if ((positionX == board.length-1 && positionY == board[0].length-1)|| balls==1){
+            int[] temp = {balls, jumps};
+            return temp;
         }
-        int[] finalResults = {numberOfBalls, numberOfMovements};
-        System.out.println(possiblesSolutions.get(0)[0]);
-        return finalResults;
+        if (positionY == board[0].length-1){
+            positionY = 0;
+            positionX++;
+        }
+
+        if (!board[positionX][positionY].equals("o")){
+            return recursiveGame(board, positionX, positionY+1, balls, jumps);
+        }
+        else{
+            try {
+                if (board[positionX + 1][positionY].equals("o") && board[positionX + 2][positionY].equals(".")) {
+                    board[positionX][positionY] = ".";
+                    board[positionX + 1][positionY] = ".";
+                    board[positionX + 2][positionY] = "o";
+                    balls--;
+                    jumps++;
+
+                }
+            } catch (Exception e) {}
+
+            try {
+                if (board[positionX - 1][positionY].equals("o") && board[positionX - 2][positionY].equals(".")) {
+                    board[positionX][positionY] = ".";
+                    board[positionX - 1][positionY] = ".";
+                    board[positionX - 2][positionY] = "o";
+                    balls--;
+                    jumps++;
+                }
+            } catch (Exception e) {}
+
+            try {
+                if (board[positionX][positionY+1].equals("o") && board[positionX][positionY+2].equals(".")) {
+                    board[positionX][positionY] = ".";
+                    board[positionX][positionY+1] = ".";
+                    board[positionX][positionY+2] = "o";
+                    balls--;
+                    jumps++;
+
+                }
+            } catch (Exception e) {}
+
+            try {
+                if (board[positionX][positionY-1].equals("o") && board[positionX][positionY-2].equals(".")) {
+                    board[positionX][positionY] = ".";
+                    board[positionX][positionY-1] = ".";
+                    board[positionX][positionY-2] = "o";
+                    balls--;
+                    jumps++;
+                }
+            } catch (Exception e) {}
+
+            return recursiveGame(board, positionX, positionY+1, balls, jumps);
+        }
 
     }
 
