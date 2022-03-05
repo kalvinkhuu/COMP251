@@ -57,13 +57,6 @@ public class HW_Sched {
 
         }
 
-        for(int i = 0; i< Assignments.size(); i++){
-            Assignment a = Assignments.get(i);
-            System.out.println(a.weight);
-            System.out.println(a.deadline);
-            System.out.println(a.number + "\n");
-        }
-
         return homeworkPlan;
     }
 

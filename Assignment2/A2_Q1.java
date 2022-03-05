@@ -6,102 +6,97 @@ public class A2_Q1 {
 
     public static int[] game(String[][] board){
         ArrayList<int[]> possibleSolutions = new ArrayList<>();
-        ArrayList<int[]> empty = new ArrayList<>();
-        int marbles = numberOfBalls(board);
         int jumps = 0;
-        possibleSolutions = recursive(board, 0, 0, marbles, jumps, empty, false);
-
+        recursive(board, 0, 0,0, jumps, possibleSolutions, false);
         int[] mostEfficient = {1000, 1000};
+        // Chooses the most efficient path
         for (int i = 0; i < possibleSolutions.size(); i++) {
             if (possibleSolutions.get(i)[0] < mostEfficient[0]){
                 mostEfficient[0] = possibleSolutions.get(i)[0];
                 mostEfficient[1] = possibleSolutions.get(i)[1];
             }
+            else if (possibleSolutions.get(i)[0] == mostEfficient[0]){
+                if (possibleSolutions.get(i)[1] < mostEfficient[1]){
+                    mostEfficient[0] = possibleSolutions.get(i)[0];
+                    mostEfficient[1] = possibleSolutions.get(i)[1];
+                }
+            }
         }
-
-
         return mostEfficient;
 
     }
 
-    private static ArrayList<int[]> recursive(String[][] board, int positionX, int positionY, int numberOfMarbles, int numberOfJumps, ArrayList<int[]> arrayList, boolean movedBall){
-        for(int i = positionX; i < board.length; i++){
-            for (int j = positionY; j < board[0].length; j++) {
+    private static void recursive(String[][] board, int positionX, int positionY, int directionIndex, int numberOfJumps, ArrayList<int[]> arrayList, boolean movedBall){
+        int i = positionX;
+        int j = positionY;
+        int k = directionIndex;
+        for( ;i < board.length; i++){
+            for ( ;j < board[0].length; j++) {
+                // Checks for all possibles paths
+                for (; k < 4; k++) {
+                    int directionY = 0;
+                    int directionX = 0;
+                    switch (k){
+                        case 0:
+                            directionX = 1;
+                            break;
+                        case 1:
+                            directionX = -1;
+                            break;
+                        case 2:
+                            directionY = 1;
+                            break;
+                        case 3:
+                            directionY = -1;
+                            break;
+                    }
+                    // try catch for OutOfBoundsException
                     try{
-                        if(board[i+1][j].equals("o") && board[i+2][j].equals(".") && board[i][j].equals("o")){
-                            recursive(board, i, j+1, numberOfBalls(board), numberOfJumps, arrayList, movedBall);
+                        if (board[i+directionY][j+directionX].equals("o") && board[i+2*directionY][j+2*directionX].equals(".") && board[i][j].equals("o")){
+                            String[][] temp;
+                            temp = deepCopy(board);
+                            // Checks if there's other possible paths
+                            recursive(temp, i, j+(k==3?1:0),k == 3?0:k+1, numberOfJumps, arrayList, movedBall);
+                            board[i][j] = ".";
+                            board[i+directionY][j+directionX] = ".";
+                            board[i+2*directionY][j+2*directionX] = "o";
                             movedBall = true;
                             numberOfJumps++;
-                            numberOfMarbles--;
-                            board[i][j] = ".";
-                            board[i+1][j] = ".";
-                            board[i+2][j] = "o";
-                            recursive(board, i, j+1, numberOfMarbles, numberOfJumps, arrayList, movedBall);
+                            break;
                         }
                     } catch (Exception e) {}
-                    try{
-                        if(board[i-1][j].equals("o") && board[i-2][j].equals(".") && board[i][j].equals("o")){
-                            recursive(board, i, j+1, numberOfBalls(board), numberOfJumps, arrayList, movedBall);
-                            movedBall = true;
-                            numberOfJumps++;
-                            numberOfMarbles--;
-                            board[i][j] = ".";
-                            board[i-1][j] = ".";
-                            board[i-2][j] = "o";
-                            recursive(board, i, j+1, numberOfBalls(board), numberOfJumps, arrayList, movedBall);
-                        }
-                    } catch (Exception e) {}
-                    try{
-                        if(board[i][j+1].equals("o") && board[i][j+2].equals(".") && board[i][j].equals("o")){
-                            recursive(board, i, j+1, numberOfBalls(board), numberOfJumps, arrayList, movedBall);
-                            movedBall = true;
-                            numberOfJumps++;
-                            numberOfMarbles--;
-                            board[i][j] = ".";
-                            board[i][j+1] = ".";
-                            board[i][j+2] = "o";
-                            recursive(board, i, j+1, numberOfBalls(board), numberOfJumps, arrayList, movedBall);
-                        }
-                    } catch (Exception e) {}
-                    try{
-                        if(board[i][j-1].equals("o") && board[i][j-2].equals(".") && board[i][j].equals("o")){
-                            recursive(board, i, j+1, numberOfBalls(board), numberOfJumps, arrayList, movedBall);
-                            movedBall = true;
-                            numberOfJumps++;
-                            numberOfMarbles--;
-                            board[i][j] = ".";
-                            board[i][j-1] = ".";
-                            board[i][j-2] = "o";
-                            recursive(board, i, j+1, numberOfBalls(board), numberOfJumps, arrayList, movedBall);
-                        }
-                    } catch (Exception e) {}
-
+                }
+                if(movedBall){
+                    break;
+                }
+                k = 0;
             }
-            positionY = 0;
+            if(movedBall){
+                break;
+            }
+            j = 0;
+
         }
 
+
         if (movedBall){
-            return recursive(board, 0, 0, numberOfBalls(board), numberOfJumps, arrayList, false);
+            recursive(board, 0, 0, 0, numberOfJumps, arrayList, false);
+            return;
         }
 
         int[] temp = {numberOfBalls(board), numberOfJumps};
-        if (!arrayList.contains(temp)){
-            arrayList.add(temp);
-        }
+        arrayList.add(temp);
 
-        System.out.println(temp[0] + "," + temp[1]);
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 9; j++) {
-                System.out.print(board[i][j]+",");
-            }
-            System.out.println("\n");
-        }
-        System.out.println("\n");
-        return arrayList;
+
+        return;
     }
 
+    /*
+    * Checks the amount of balls in the board
+    * Input: Board
+    * Output: Number of balls in the board
+    * */
     private static int numberOfBalls(String[][] board){
-
         int counter = 0;
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[0].length; j++) {
@@ -114,65 +109,19 @@ public class A2_Q1 {
     }
 
 
+    // Creates a deep copy
+    private static String[][] deepCopy(String[][] array){
+        String[][] newArray = new String[5][9];
 
-    final static int HEIGHT = 5;
-    final static int WIDTH = 9;
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 9; j++) {
+                newArray[i][j] = array[i][j];
+            }
+        }
 
-    final static String TEST_FOLDER = "Open_Tests/Q1";
-    public static void main(String[] args) {
-//        File f = new File(TEST_FOLDER);
-//        for (String name : f.list()) {
-//            if (name.endsWith(".in")) {
-//                try {
-//                    File in = new File(TEST_FOLDER + "/" + name);
-//                    File out = new File(TEST_FOLDER + "/" + name.substring(0, name.length()-3)+".ans");
-//                    Scanner in_scan = new Scanner(in);
-//                    Scanner out_scan = new Scanner(out);
-//                    System.out.printf("Attempting file %s\n", name);
-//                    int n = in_scan.nextInt();
-//                    in_scan.nextLine();
-//                    for (int cs = 0; cs < n; cs++) {
-//                        String[][] board = new String[HEIGHT][WIDTH];
-//                        for (int i = 0; i < HEIGHT; i++) {
-//                            String line = in_scan.nextLine();
-//                            for (int j = 0; j < WIDTH; j++) {
-//                                board[i][j] = new String(new char[]{line.charAt(j)});
-//                            }
-//                        }
-//                        int[] got = game(board);
-//                        int expected_0 = out_scan.nextInt();
-//                        int expected_1 = out_scan.nextInt();
-//                        if (got[0] != expected_0 || got[1] != expected_1) {
-//                            System.out.printf("Expected %d %d but got %d %d\n", expected_0, expected_1, got[0], got[1]);
-//                        } else {
-//                            System.out.printf("Passed test %d\n", cs);
-//                        }
-//                        try {
-//                            in_scan.nextLine(); // Skip empty line
-//                        } catch (NoSuchElementException e) {
-//
-//                        }
-//                    }
-//
-//                    in_scan.close();
-//                    out_scan.close();
-//                } catch (FileNotFoundException e) {
-//                    System.out.println(e);
-//                }
-//            }
-//        }
-        String[][] temp = {
-                {"#", "#", "#", ".", ".", ".", "#", "#", "#"},
-                {"o", "o", ".", ".", "o", ".", "o", "o", "."},
-                {".", "o", ".", "o", ".", ".", ".", "o", "o"},
-                {".", ".", ".", ".", ".", "o", ".", ".", "."},
-                {"#", "#", "#", ".", ".", ".", "#", "#", "#"},
-        };
-        int[] tempArray = game(temp);
-        System.out.println(tempArray[0] + "," + tempArray[1]);
-
-
-
+        return newArray;
     }
+
+
 
 }

@@ -14,6 +14,7 @@ public class A2_Q2 {
 
         int[][] dpTable = new int[plates.length+1][sum*2+1];
 
+        // Find all possible weights combinations
         for (int i = 0; i < plates.length+1; i++) {
             for (int j = 0; j < sum*2+1; j++) {
                 if (i == 0 || j == 0){
@@ -30,6 +31,7 @@ public class A2_Q2 {
             }
         }
 
+        // Find the closest value out of all the weights
         int closestValue = 0;
         for (int i = 0; i < plates.length+1; i++) {
             for (int j = 0; j < sum*2+1; j++) {
@@ -41,6 +43,7 @@ public class A2_Q2 {
     }
 
 
+    // Returns the biggest number out of two numbers
     private static int maxValue (int first, int second){
         if (first > second){
             return first;
@@ -48,6 +51,7 @@ public class A2_Q2 {
         return second;
     }
 
+    // Returns the absolute value of an integer
     private static int absoluteValue (int number){
         if (number < 0){
             return -number;
@@ -55,6 +59,7 @@ public class A2_Q2 {
         return number;
     }
 
+    // Returns the closest value of the sum (priority to the bigger number)
     private static int closestToSum (int first, int second, int sum){
         int distanceFirst = absoluteValue(sum-first);
         int distanceSecond = absoluteValue(sum-second);
