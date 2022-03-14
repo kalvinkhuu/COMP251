@@ -5,26 +5,32 @@ public class RedBlackTree {
         Node parent; // pointer to the parent
         Node left; // pointer to left child
         Node right; // pointer to right child
-        boolean color; // 1 . Red, 0 . Black
+        boolean color;
+        Node(int data){
+            this.data = data;
+
+        }
+        Node(){};
     }
 
 
 
 
     private Node root;
-    private Node TNULL;
+    private Node nullTree;
     private static int counter = 0;
     private static final boolean RED = true;
     private static final boolean BLACK = false;
 
 
     public RedBlackTree() {
-        TNULL = new Node();
-        TNULL.color = BLACK;
-        TNULL.left = null;
-        TNULL.right = null;
-        root = TNULL;
+         nullTree = new Node();
+         nullTree.color = BLACK;
+         nullTree.left = null;
+         nullTree.right = null;
+         root = nullTree;
     }
+
 
     private Node searchRedBlackTree(Node node, int key) {
 
@@ -49,156 +55,177 @@ public class RedBlackTree {
         return searchRedBlackTree(this.root, k);
     }
 
-    public void leftRotate(Node node) {
+    public void leftRotation(Node node){
         Node newNode = node.right;
         node.right = newNode.left;
-        if (newNode.left != TNULL) {
-            newNode.left.parent = node;
-        }
-        newNode.parent = node.parent;
-
-        // If it is the root
-        if (node.parent == null) {
+        newNode.left.parent = node;
+        newNode.left = node;
+        if (node.parent == null){
             this.root = newNode;
         }
 
-        // Setting the parent to the new root
-        else if (node == node.parent.left) {
+        else if (node == node.parent.left){
             node.parent.left = newNode;
         }
         else {
             node.parent.right = newNode;
         }
-
+        newNode.parent = node.parent;
         newNode.left = node;
         node.parent = newNode;
     }
 
-    public void rightRotate(Node x) {
-        Node y = x.left;
-        x.left = y.right;
-        if (y.right != TNULL) {
-            y.right.parent = x;
-        }
-        y.parent = x.parent;
-
-        // If it is the root
-        if (x.parent == null) {
-            this.root = y;
+    public void rightRotation(Node node){
+        Node newNode = node.left;
+        node.left = newNode.right;
+        newNode.right.parent = node;
+        newNode.right = node;
+        if (node.parent == null){
+            this.root = newNode;
         }
 
-        // Setting the parent to the new root
-        else if (x == x.parent.right) {
-            x.parent.right = y;
+        else if (node == node.parent.left){
+            node.parent.left = newNode;
         }
         else {
-            x.parent.left = y;
+            node.parent.right = newNode;
         }
+        newNode.parent = node.parent;
+        newNode.right = node;
+        node.parent = newNode;
 
-        y.right = x;
-        x.parent = y;
     }
 
-    public void insert(int key) {
-        Node node = new Node();
-        node.parent = null;
-        node.data = key;
-        node.left = TNULL;
-        node.right = TNULL;
-        node.color = RED; // new node must be red
 
-        Node y = null;
-        Node x = this.root;
+    public void insertNode(int key){
+        Node keyNode = new Node(key);
+        keyNode.left = nullTree;
+        keyNode.right = nullTree;
+        keyNode.color = RED;
+        Node tempNode = this.root;
+        Node keyNodeParent = null;
 
-        // Traverse through the tree
-        while (x != TNULL) {
-            y = x;
-            if (node.data < x.data) {
-                x = x.left;
-            } else {
-                x = x.right;
+        while (tempNode != nullTree){
+            keyNodeParent = tempNode;
+            if (key < tempNode.data){
+                tempNode = tempNode.left;
+            }
+            else {
+                tempNode = tempNode.right;
             }
         }
-
-        // Setting the node in place
-        node.parent = y;
-        if (y == null) {
-            root = node;
-        } else if (node.data < y.data) {
-            y.left = node;
-        } else {
-            y.right = node;
+        keyNode.parent = keyNodeParent;
+        if (keyNodeParent == null){
+            this.root = keyNode;
+        }
+        else if (key < keyNodeParent.data){
+            keyNodeParent.left = keyNode;
+        }
+        else if (key > keyNodeParent.data){
+            keyNodeParent.right = keyNode;
         }
 
-        // if new node is a root node, simply return
-        if (node.parent == null) {
-            node.color = BLACK;
+
+        if (keyNode.data == root.data){
+            keyNode.color = BLACK;
             return;
         }
-
-        // if the grandparent is null, simply return
-        if (node.parent.parent == null) {
+        if (keyNode.parent.parent == null){
             return;
         }
-
-        // Fix the tree
-        fixInsert(node);
+        fixInsert(keyNode);
     }
 
     // fix the red-black tree
-    private void fixInsert(Node k) {
+    private void fixInsert(Node node) {
         Node u;
-        while (k.parent.color == RED) {
-            if (k.parent == k.parent.parent.right) {
-                u = k.parent.parent.left; // uncle
+        while (node.parent.color == RED) {
+            if (node.parent == node.parent.parent.right) {
+                u = node.parent.parent.left; // uncle
                 if (u.color == RED) {
                     // case 3.1
                     u.color = BLACK;
-                    k.parent.color = BLACK;
-                    k.parent.parent.color = RED;
-                    k = k.parent.parent;
+                    node.parent.color = BLACK;
+                    node.parent.parent.color = RED;
+                    node = node.parent.parent;
                 }
                 else {
-                    if (k == k.parent.left) {
+                    if (node == node.parent.left) {
                         // case 3.2.2
-                        k = k.parent;
-                        rightRotate(k);
+                        node = node.parent;
+                        rightRotation(node);
                     }
                     // case 3.2.1
-                    k.parent.color = BLACK;
-                    k.parent.parent.color = RED;
-                    leftRotate(k.parent.parent);
+                    node.parent.color = BLACK;
+                    node.parent.parent.color = RED;
+                    leftRotation(node.parent.parent);
                 }
             }
             else {
-                u = k.parent.parent.right; // uncle
+                u = node.parent.parent.right; // uncle
 
                 if (u.color == RED) {
                     // mirror case 3.1
                     u.color = BLACK;
-                    k.parent.color = BLACK;
-                    k.parent.parent.color = RED;
-                    k = k.parent.parent;
+                    node.parent.color = BLACK;
+                    node.parent.parent.color = RED;
+                    node = node.parent.parent;
                 } else {
-                    if (k == k.parent.right) {
+                    if (node == node.parent.right) {
                         // mirror case 3.2.2
-                        k = k.parent;
-                        leftRotate(k);
+                        node = node.parent;
+                        leftRotation(node);
                     }
                     // mirror case 3.2.1
-                    k.parent.color = BLACK;
-                    k.parent.parent.color = RED;
-                    rightRotate(k.parent.parent);
+                    node.parent.color = BLACK;
+                    node.parent.parent.color = RED;
+                    rightRotation(node.parent.parent);
                 }
             }
-            if (k == root) {
+            if (node == root) {
                 break;
             }
         }
         root.color = BLACK;
     }
 
-
+    private void repairInsertFixup(Node node){
+        Node tempNode;
+        while (node.parent.color == RED){
+            if (node.parent == node.parent.parent.left){
+                tempNode = node.parent.parent.right;
+                if (tempNode.color = RED){
+                    node.parent.color = BLACK;
+                    node.color = BLACK;
+                    node.parent.parent.color = RED;
+                    node = node.parent.parent;
+                }
+                else if (node == node.parent.right){
+                    node = node.parent;
+                    leftRotation(node);
+                    node.parent.color = BLACK;
+                    node.parent.parent.color = RED;
+                    rightRotation(node);
+                }
+            }
+            else{
+                tempNode = node.parent.parent.left;
+                if (tempNode.color = RED){
+                    node.parent.color = BLACK;
+                    node.color = BLACK;
+                    node.parent.parent.color = RED;
+                    node = node.parent.parent;
+                }
+                else if (node == node.parent.left){
+                    node = node.parent;
+                    rightRotation(node);
+                    node.parent.color = BLACK;
+                    node.parent.parent.color = RED;
+                    leftRotation(node);
+                }
+            }
+        }
+    }
 
     // print the tree structure on the screen
     public void prettyPrint() {
@@ -207,7 +234,7 @@ public class RedBlackTree {
 
     private void printHelper(Node root, String indent, boolean last) {
         // print the tree structure on the screen
-        if (root != TNULL) {
+        if (root != nullTree) {
             System.out.print(indent);
             if (last) {
                 System.out.print("R----");
@@ -226,15 +253,11 @@ public class RedBlackTree {
 
     public static void main(String[] args) {
         RedBlackTree bst = new RedBlackTree();
-        bst.insert(8);
-        bst.insert(18);
-        bst.insert(5);
-        bst.insert(15);
-        bst.insert(17);
-        bst.insert(25);
-        bst.insert(40);
-        bst.insert(80);
-        bst.searchTree(80);
+
+        for (int i = 0; i <= 31; i++) {
+            bst.insertNode(i);
+        }
+        bst.searchTree(31);
         System.out.println(counter);
         bst.prettyPrint();
     }
