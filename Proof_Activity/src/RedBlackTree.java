@@ -1,14 +1,23 @@
+import java.io.FileWriter;
+import java.io.IOException;
+import org.knowm.xchart.*;
+import org.knowm.xchart.BitmapEncoder.BitmapFormat;
+import org.knowm.xchart.style.markers.SeriesMarkers;
+
 // class RedBlackTree implements the operations in Red Black Tree
 public class RedBlackTree {
-    class Node {
-        int data; // holds the key
-        Node parent; // pointer to the parent
-        Node left; // pointer to left child
-        Node right; // pointer to right child
-        boolean color;
+
+    /*
+    * Node Structure with respective parameters
+    * */
+    static class Node {
+        int data; // Key or Value of Node
+        Node parent; // Pointer to parent Node
+        Node left; // Pointer to left Node
+        Node right; // Pointer to right Node
+        boolean color; // Color of Node: Red = true & Black = false
         Node(int data){
             this.data = data;
-
         }
         Node(){};
     }
@@ -32,21 +41,27 @@ public class RedBlackTree {
     }
 
 
+    // Search for a key in a tree, returns the node if found
     private Node searchRedBlackTree(Node node, int key) {
 
+        // Iterates through the tree
         while (node != null){
             counter++;
+            // If found, the node will be return
             if (key == node.data) {
                 return node;
             }
 
+            // Goes to the left node if key has a value lower than the node data
             if (key < node.data) {
                 node = node.left;
             }
+            // Goes to the right node if key has a value higher than the node data
             else {
                 node = node.right;
             }
         }
+        // Returns null if not found
         return null;
 
     }
@@ -55,6 +70,7 @@ public class RedBlackTree {
         return searchRedBlackTree(this.root, k);
     }
 
+    // Left rotation of the node with respect to their parents
     public void leftRotation(Node node){
         Node newNode = node.right;
         node.right = newNode.left;
@@ -75,6 +91,7 @@ public class RedBlackTree {
         node.parent = newNode;
     }
 
+    // Right rotation of the node with respect to their parents
     public void rightRotation(Node node){
         Node newNode = node.left;
         node.left = newNode.right;
@@ -97,6 +114,7 @@ public class RedBlackTree {
     }
 
 
+    // Insertion of a node with key value
     public void insertNode(int key){
         Node keyNode = new Node(key);
         keyNode.left = nullTree;
@@ -105,6 +123,7 @@ public class RedBlackTree {
         Node tempNode = this.root;
         Node keyNodeParent = null;
 
+        // Traverse through the tree
         while (tempNode != nullTree){
             keyNodeParent = tempNode;
             if (key < tempNode.data){
@@ -114,6 +133,8 @@ public class RedBlackTree {
                 tempNode = tempNode.right;
             }
         }
+
+        // Sets node to the corresponding pointer with respect to its parent
         keyNode.parent = keyNodeParent;
         if (keyNodeParent == null){
             this.root = keyNode;
@@ -136,12 +157,14 @@ public class RedBlackTree {
         RBInsertFixup(keyNode);
     }
 
+    // Fix Insertion Node with respect to the properties of a red-black tree
     private void RBInsertFixup(Node node){
         Node tempNode;
         while (node.parent.color == RED){
             if (node.parent == node.parent.parent.left){
-                tempNode = node.parent.parent.right;
+                tempNode = node.parent.parent.right; // Uncle
                 if (tempNode.color == RED){
+                    // Case 1 of the Lecture 6 - Comp251BST_RedBlack Page 22
                     node.parent.color = BLACK;
                     tempNode.color = BLACK;
                     node.parent.parent.color = RED;
@@ -149,17 +172,20 @@ public class RedBlackTree {
                 }
                 else {
                     if (node == node.parent.right){
+                        // Case 2 of the Lecture 6 - Comp251BST_RedBlack Page 22
                         node = node.parent;
                         leftRotation(node);
                     }
-                        node.parent.color = BLACK;
-                        node.parent.parent.color = RED;
-                        rightRotation(node.parent.parent);
+                    // Case 3 of the Lecture 6 - Comp251BST_RedBlack Page 22
+                    node.parent.color = BLACK;
+                    node.parent.parent.color = RED;
+                    rightRotation(node.parent.parent);
 
                 }
 
             }
             else{
+                // Symmetry
                 tempNode = node.parent.parent.left;
                 if (tempNode.color == RED){
                     node.parent.color = BLACK;
@@ -185,6 +211,20 @@ public class RedBlackTree {
         this.root.color = BLACK;
     }
 
+    public static int runSearch(int n){
+        counter = 0;
+        RedBlackTree tree = new RedBlackTree();
+        for (int i = 1; i <= n ; i++) {
+            tree.insertNode(i);
+        }
+        tree.searchTree(n);
+
+        return counter;
+    }
+
+
+
+
     // print the tree structure on the screen
     public void prettyPrint() {
         printHelper(this.root, "", true);
@@ -209,13 +249,69 @@ public class RedBlackTree {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         RedBlackTree bst = new RedBlackTree();
 
-        for (int i = 0; i < 18; i++) {
+        for (int i = 0; i < 50; i++) {
             bst.insertNode(i);
         }
         System.out.println(counter);
         bst.prettyPrint();
+//
+//
+//        int samples = 1000;
+//        double[] ns = new double[samples];
+//        double[] execution_times = new double[samples];
+//        for (int i=0; i<samples; i++) {
+//            execution_times[i] = runSearch(i);
+//            ns[i] = i;
+//        }
+//
+//        // create chart
+//        XYChart chart = QuickChart.getChart("Execution Time of Search in Red-Black Tree", "Number of nodes", "Number of operations", "Search Runtime", ns, execution_times);
+//        double[] n2s = new double[samples];
+//        // add reference quadratic
+////        for (int i=0; i<samples; i++) {
+////            n2s[i] = (Math.pow(ns[i], 2)/25 + 500);
+////        }
+////        chart.addSeries("n^2 / 25 + 500", ns, n2s).setMarker(SeriesMarkers.NONE);;
+//        // display chart
+//        //new SwingWrapper<>(chart).displayChart();
+//
+//        // save chart
+//        try {
+//            BitmapEncoder.saveBitmapWithDPI(chart, "./Run_Time_Chart", BitmapFormat.PNG, 300);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+
+
+
+
+//        FileWriter data = new FileWriter("runtime.csv", false);
+//
+//
+//        double[] nodes = new double[1001];
+//        double[] numOperations = new double[1001];
+//        for(int runs = 1; runs <= 1000; runs++){
+//
+//            numOperations[runs] = runSearch(runs);
+//            nodes[runs] = runs;
+//
+//            data.append(runs + "," + numOperations[runs] + "\n");
+//        }
+//        XYChart chart = QuickChart.getChart("Execution Time of Search in Red-Black Tree", "Number of nodes", "Number of operations", "Search Runtime", nodes, numOperations);
+//
+//        try {
+//            BitmapEncoder.saveBitmapWithDPI(chart, "./Run_Time_Chart", BitmapFormat.PNG, 300);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//
+//        data.flush();
+//        data.close();
+
     }
 }
