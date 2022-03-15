@@ -130,101 +130,59 @@ public class RedBlackTree {
             keyNode.color = BLACK;
             return;
         }
-        if (keyNode.parent.parent == null){
+        if (keyNode.parent.parent == nullTree){
             return;
         }
-        fixInsert(keyNode);
+        RBInsertFixup(keyNode);
     }
 
-    // fix the red-black tree
-    private void fixInsert(Node node) {
-        Node u;
-        while (node.parent.color == RED) {
-            if (node.parent == node.parent.parent.right) {
-                u = node.parent.parent.left; // uncle
-                if (u.color == RED) {
-                    // case 3.1
-                    u.color = BLACK;
-                    node.parent.color = BLACK;
-                    node.parent.parent.color = RED;
-                    node = node.parent.parent;
-                }
-                else {
-                    if (node == node.parent.left) {
-                        // case 3.2.2
-                        node = node.parent;
-                        rightRotation(node);
-                    }
-                    // case 3.2.1
-                    node.parent.color = BLACK;
-                    node.parent.parent.color = RED;
-                    leftRotation(node.parent.parent);
-                }
-            }
-            else {
-                u = node.parent.parent.right; // uncle
-
-                if (u.color == RED) {
-                    // mirror case 3.1
-                    u.color = BLACK;
-                    node.parent.color = BLACK;
-                    node.parent.parent.color = RED;
-                    node = node.parent.parent;
-                } else {
-                    if (node == node.parent.right) {
-                        // mirror case 3.2.2
-                        node = node.parent;
-                        leftRotation(node);
-                    }
-                    // mirror case 3.2.1
-                    node.parent.color = BLACK;
-                    node.parent.parent.color = RED;
-                    rightRotation(node.parent.parent);
-                }
-            }
-            if (node == root) {
-                break;
-            }
-        }
-        root.color = BLACK;
-    }
-
-    private void repairInsertFixup(Node node){
+    private void RBInsertFixup(Node node){
         Node tempNode;
         while (node.parent.color == RED){
             if (node.parent == node.parent.parent.left){
                 tempNode = node.parent.parent.right;
-                if (tempNode.color = RED){
+                if (tempNode.color == RED){
                     node.parent.color = BLACK;
-                    node.color = BLACK;
+                    tempNode.color = BLACK;
                     node.parent.parent.color = RED;
                     node = node.parent.parent;
                 }
-                else if (node == node.parent.right){
-                    node = node.parent;
-                    leftRotation(node);
-                    node.parent.color = BLACK;
-                    node.parent.parent.color = RED;
-                    rightRotation(node);
+                else {
+                    if (node == node.parent.right){
+                        node = node.parent;
+                        leftRotation(node);
+                    }
+                        node.parent.color = BLACK;
+                        node.parent.parent.color = RED;
+                        rightRotation(node.parent.parent);
+
                 }
+
             }
             else{
                 tempNode = node.parent.parent.left;
-                if (tempNode.color = RED){
+                if (tempNode.color == RED){
                     node.parent.color = BLACK;
-                    node.color = BLACK;
+                    tempNode.color = BLACK;
                     node.parent.parent.color = RED;
                     node = node.parent.parent;
                 }
-                else if (node == node.parent.left){
-                    node = node.parent;
-                    rightRotation(node);
+                else{
+                    if (node == node.parent.left){
+                        node = node.parent;
+                        rightRotation(node);
+                    }
                     node.parent.color = BLACK;
                     node.parent.parent.color = RED;
-                    leftRotation(node);
+                    leftRotation(node.parent.parent);
                 }
+
+            }
+            if (node == root){
+                break;
             }
         }
+        this.root.color = BLACK;
     }
 
     // print the tree structure on the screen
@@ -254,10 +212,9 @@ public class RedBlackTree {
     public static void main(String[] args) {
         RedBlackTree bst = new RedBlackTree();
 
-        for (int i = 0; i <= 31; i++) {
+        for (int i = 0; i < 18; i++) {
             bst.insertNode(i);
         }
-        bst.searchTree(31);
         System.out.println(counter);
         bst.prettyPrint();
     }
