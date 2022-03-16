@@ -46,7 +46,7 @@ public class RedBlackTree {
 
         // Iterates through the tree
         while (node != null){
-            counter++;
+//            counter++;
             // If found, the node will be return
             if (key == node.data) {
                 return node;
@@ -212,14 +212,17 @@ public class RedBlackTree {
     }
 
     public static int runSearch(int n){
-        counter = 0;
         RedBlackTree tree = new RedBlackTree();
         for (int i = 1; i <= n ; i++) {
             tree.insertNode(i);
         }
+        long start = System.nanoTime();
         tree.searchTree(n);
+        long end = System.nanoTime();
 
-        return counter;
+        int duration = (int) (end - start);
+
+        return duration;
     }
 
 
@@ -250,40 +253,40 @@ public class RedBlackTree {
     }
 
     public static void main(String[] args) throws IOException {
-        RedBlackTree bst = new RedBlackTree();
-
-        for (int i = 0; i < 50; i++) {
-            bst.insertNode(i);
+//        RedBlackTree bst = new RedBlackTree();
+//
+//        for (int i = 0; i < 50; i++) {
+//            bst.insertNode(i);
+//        }
+//        System.out.println(counter);
+//        bst.prettyPrint();
+//
+//
+        int samples = 100;
+        double[] ns = new double[samples];
+        double[] execution_times = new double[samples];
+        for (int i=0; i<samples; i++) {
+            execution_times[i] = runSearch(i);
+            ns[i] = i;
         }
-        System.out.println(counter);
-        bst.prettyPrint();
-//
-//
-//        int samples = 1000;
-//        double[] ns = new double[samples];
-//        double[] execution_times = new double[samples];
+
+        // create chart
+        XYChart chart = QuickChart.getChart("Execution Time of Search in Red-Black Tree", "Number of nodes", "Runtime (ns)", "Search Runtime", ns, execution_times);
+        double[] n2s = new double[samples];
+        // add reference quadratic
 //        for (int i=0; i<samples; i++) {
-//            execution_times[i] = runSearch(i);
-//            ns[i] = i;
+//            n2s[i] = (Math.pow(ns[i], 2)/25 + 500);
 //        }
-//
-//        // create chart
-//        XYChart chart = QuickChart.getChart("Execution Time of Search in Red-Black Tree", "Number of nodes", "Number of operations", "Search Runtime", ns, execution_times);
-//        double[] n2s = new double[samples];
-//        // add reference quadratic
-////        for (int i=0; i<samples; i++) {
-////            n2s[i] = (Math.pow(ns[i], 2)/25 + 500);
-////        }
-////        chart.addSeries("n^2 / 25 + 500", ns, n2s).setMarker(SeriesMarkers.NONE);;
-//        // display chart
-//        //new SwingWrapper<>(chart).displayChart();
-//
-//        // save chart
-//        try {
-//            BitmapEncoder.saveBitmapWithDPI(chart, "./Run_Time_Chart", BitmapFormat.PNG, 300);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+//        chart.addSeries("n^2 / 25 + 500", ns, n2s).setMarker(SeriesMarkers.NONE);;
+        // display chart
+        //new SwingWrapper<>(chart).displayChart();
+
+        // save chart
+        try {
+            BitmapEncoder.saveBitmapWithDPI(chart, "./Run_Time_Chart", BitmapFormat.PNG, 300);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
 
