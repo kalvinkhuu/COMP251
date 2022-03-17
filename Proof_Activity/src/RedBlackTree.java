@@ -226,46 +226,15 @@ public class RedBlackTree {
     }
 
 
-
-
-    // print the tree structure on the screen
-    public void prettyPrint() {
-        printHelper(this.root, "", true);
-    }
-
-    private void printHelper(Node root, String indent, boolean last) {
-        // print the tree structure on the screen
-        if (root != nullTree) {
-            System.out.print(indent);
-            if (last) {
-                System.out.print("R----");
-                indent += "     ";
-            } else {
-                System.out.print("L----");
-                indent += "|    ";
-            }
-
-            String sColor = root.color == RED ? "RED" : "BLACK";
-            System.out.println(root.data + "(" + sColor + ")");
-            printHelper(root.left, indent, false);
-            printHelper(root.right, indent, true);
-        }
-    }
-
     public static void main(String[] args) throws IOException {
-//        RedBlackTree bst = new RedBlackTree();
-//
-//        for (int i = 0; i < 50; i++) {
-//            bst.insertNode(i);
-//        }
-//        System.out.println(counter);
-//        bst.prettyPrint();
-//
-//
+
         int samples = 100;
         double[] ns = new double[samples];
         double[] execution_times = new double[samples];
         for (int i=0; i<samples; i++) {
+            if (i==0){
+                continue;
+            }
             execution_times[i] = runSearch(i);
             ns[i] = i;
         }
@@ -273,13 +242,6 @@ public class RedBlackTree {
         // create chart
         XYChart chart = QuickChart.getChart("Execution Time of Search in Red-Black Tree", "Number of nodes", "Runtime (ns)", "Search Runtime", ns, execution_times);
         double[] n2s = new double[samples];
-        // add reference quadratic
-//        for (int i=0; i<samples; i++) {
-//            n2s[i] = (Math.pow(ns[i], 2)/25 + 500);
-//        }
-//        chart.addSeries("n^2 / 25 + 500", ns, n2s).setMarker(SeriesMarkers.NONE);;
-        // display chart
-        //new SwingWrapper<>(chart).displayChart();
 
         // save chart
         try {
