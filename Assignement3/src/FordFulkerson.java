@@ -10,38 +10,35 @@ public class FordFulkerson {
 
         boolean[] visited = new boolean[n];
         Stack<Integer> stack = new Stack<>();
-
+        ArrayList<Integer> empty = new ArrayList<>();
 
         //Iterative DFS
         stack.push(source);
+//        Node currNode = new Node(empty, source, empty);
         while(!stack.isEmpty()){
-            Integer currNode = stack.pop();
-
+            Integer currNodeID = stack.pop();
+            path.add(currNodeID);
+            if (currNodeID.equals(destination) ){
+                return path;
+            }
             List<Edge> adjacent = new ArrayList<>();
             // In all the edges in the graph, I want the edges connected to the source
             for(Edge e : graph.getEdges()){
-                if (e.nodes[0] == currNode || e.nodes[1] == currNode){
+                if (e.nodes[0] == currNodeID){
                     adjacent.add(e);
                 }
             }
-            if (!visited[currNode]){
-                visited[currNode] = true;
+            if (!visited[currNodeID]){
+                visited[currNodeID] = true;
                 for(Edge e: adjacent){
-                    if (e.nodes[0] == currNode){
-                        stack.push(e.nodes[1]);
-                    }
-                    else if (e.nodes[1] == currNode){
-                        stack.push(e.nodes[0]);
-                    }
-                    else {
-                        System.out.println("Something is wrong");
-                    }
+                    // Pushing the adjacent nodeID into the stack
+                    stack.push(e.nodes[1]);
+
                 }
             }
         }
 
-        // Should find a path from source to destination
-
+        // Return the prev path of the destination
         return path;
     }
 
@@ -58,6 +55,32 @@ public class FordFulkerson {
         return answer;
     }
 
+    public static class Node {
+        ArrayList<Integer> prevPath;
+        Integer nodeID;
+        ArrayList<Integer> futurePath;
+
+        public Node(){};
+
+        public Node(ArrayList<Integer> prevPath, Integer nodeID, ArrayList<Integer> futurePath) {
+            this.prevPath = prevPath;
+            this.nodeID = nodeID;
+            this.futurePath = futurePath;
+        }
+    }
+
+
+
+    // Need to change the input
+    private static ArrayList<Integer> deepCopy(ArrayList<Integer> path){
+        ArrayList<Integer> arrayList = new ArrayList<>();
+
+        for (int i = 0; i < path.size(); i++) {
+            arrayList.add(path.get(i));
+        }
+
+        return arrayList;
+    }
 
     public static void main(String[] args){
         String file = args[0];
