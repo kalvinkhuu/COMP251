@@ -79,6 +79,9 @@ public class FordFulkerson {
                 break;
             }
 
+            // Need to find a way to check the back edges and measure the bottleneck
+
+
             Integer bottleneckValue = findBottleneckValue(possiblePath, resultGraph, weightTable);
             maxFlow += bottleneckValue;
 
@@ -124,6 +127,7 @@ public class FordFulkerson {
                 Integer maxWeight = weightTable[source][destination];
 
                 Integer possibleBottleneck = maxWeight - weightEdge;
+                // Could check if it's a back edge 
                 if (possibleBottleneck < minimumWeight){
                     minimumWeight = possibleBottleneck;
                 }
