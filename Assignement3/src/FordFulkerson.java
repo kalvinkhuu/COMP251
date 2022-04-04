@@ -3,10 +3,23 @@ import java.io.File;
 
 public class FordFulkerson {
 
+    // Keeps the maximum weights of each edge
+    private static Integer[][] weightTable;
+
     public static ArrayList<Integer> pathDFS(Integer source, Integer destination, WGraph graph){
+
+        boolean onlyPathDFS = false;
+
+        if(weightTable == null){
+            weightTable = originalWeightEdge(graph);
+            onlyPathDFS =true;
+        }
+
+
         ArrayList<Integer> path = new ArrayList<Integer>();
 
         int n = graph.getNbNodes();
+
 
         boolean[] visited = new boolean[n];
         Stack<Integer> stack = new Stack<>();
@@ -24,6 +37,9 @@ public class FordFulkerson {
             if(currNode.equals(destination)){
                 ArrayList<Integer> temp = prevNodes.get(currNode);
                 temp.add(currNode);
+                if(onlyPathDFS){
+                    weightTable = null;
+                }
                 return temp;
             }
             List<Edge> adjacent = new ArrayList<>();
@@ -36,11 +52,21 @@ public class FordFulkerson {
                 *   if it's destined to the current node
                 *       if the weight of the edge is not at 0
                 * */
-                if (e.nodes[0] == currNode){
-                    adjacent.add(e);
+                if (onlyPathDFS){
+                    if (e.nodes[0] == currNode){
+                        adjacent.add(e);
+                    }
                 }
+                else{
+                    if ((e.nodes[0] == currNode && !e.weight.equals(weightTable[e.nodes[0]][e.nodes[1]]))
+                            || (e.nodes[1] == currNode && !e.weight.equals(0) && !visited[e.nodes[0]])){
+                        adjacent.add(e);
+                    }
+                }
+
             }
 
+            // Can be deleted
             if (adjacent.size() == 0){
                 path.remove(currNode);
             }
@@ -49,7 +75,13 @@ public class FordFulkerson {
                 visited[currNode] = true;
                 for(Edge e: adjacent){
                     stack.push(e.nodes[1]);
-                    ArrayList<Integer> temp = new ArrayList<>(prevNodes.get(e.nodes[0]));
+                    ArrayList<Integer> temp = new ArrayList<>();
+                    try {
+                        temp = new ArrayList<>(prevNodes.get(e.nodes[0]));
+                    } catch (Exception exception) {
+                        temp = new ArrayList<>(prevNodes.get(e.nodes[1]));
+                    }
+//                    ArrayList<Integer> temp = new ArrayList<>(prevNodes.get(e.nodes[0]));
                     temp.add(currNode);
                     prevNodes.put(e.nodes[1], temp);
                 }
@@ -57,7 +89,10 @@ public class FordFulkerson {
         }
 
         // No path
-        return null;
+        if(onlyPathDFS){
+            weightTable = null;
+        }
+        return new ArrayList<>(0);
     }
 
 
@@ -70,7 +105,9 @@ public class FordFulkerson {
         for(Edge e : resultGraph.getEdges()){
             resultGraph.setEdge(e.nodes[0], e.nodes[1], 0); // Initialized it to zero
         }
-        Integer[][] weightTable = originalWeightEdge(graph);
+        if(weightTable == null){
+            weightTable = originalWeightEdge(graph);
+        }
 
         // Get all possible paths
         while(true){
@@ -80,29 +117,24 @@ public class FordFulkerson {
             }
 
             // Need to find a way to check the back edges and measure the bottleneck
-
-
-            Integer bottleneckValue = findBottleneckValue(possiblePath, resultGraph, weightTable);
+            Integer bottleneckValue = findBottleneckValue(possiblePath, resultGraph);
             maxFlow += bottleneckValue;
 
-            for (int i = 0; i < possiblePath.size(); i++) {
-                try{
-                    Integer source = possiblePath.get(i);
-                    Integer destination = possiblePath.get(i+1);
-                    if (resultGraph.getEdge(source, destination) != null){
-                        resultGraph.getEdge(source, destination).weight += bottleneckValue;
-                    }
-                    else{
-                        resultGraph.getEdge(source, destination).weight -= bottleneckValue;
-                    }
-                } catch (Exception e){
-                    break;
+            for (int i = 0; i < possiblePath.size()-1; i++) {
+                Integer source = possiblePath.get(i);
+                Integer destination = possiblePath.get(i+1);
+                if (resultGraph.getEdge(source, destination) != null){
+                    resultGraph.getEdge(source, destination).weight += bottleneckValue;
                 }
+                else{
+                    resultGraph.getEdge(destination, source).weight -= bottleneckValue;
+                }
+
             }
         }
 
         graph = resultGraph;
-
+        weightTable = null;
         answer += maxFlow + "\n" + graph.toString();
         return answer;
     }
@@ -117,25 +149,33 @@ public class FordFulkerson {
         return weightTable;
     }
 
-    private static Integer findBottleneckValue(ArrayList<Integer> path, WGraph wGraph, Integer[][] weightTable){
+    private static Integer findBottleneckValue(ArrayList<Integer> path, WGraph wGraph){
         Integer minimumWeight = Integer.MAX_VALUE;
-        for (int i = 0; i < path.size(); i++) {
-            try{
-                Integer source = path.get(i);
-                Integer destination = path.get(i+1);
-                Integer weightEdge = wGraph.getEdge(source, destination).weight;
+        for (int i = 0; i < path.size()-1; i++) {
+
+            boolean flag = false;
+            Integer source = path.get(i);
+            Integer destination = path.get(i+1);
+            Integer weightEdge = -1;
+
+            Edge currEdge = wGraph.getEdge(source, destination);
+            if (currEdge == null){
+                weightEdge = wGraph.getEdge(destination, source).weight;
+                flag = true;
+            } else {
+                weightEdge = currEdge.weight;
+            }
+            if (flag){
+                Integer possibleBottleneck = weightEdge;
+                minimumWeight = Math.min(possibleBottleneck, minimumWeight);
+
+            } else {
                 Integer maxWeight = weightTable[source][destination];
-
                 Integer possibleBottleneck = maxWeight - weightEdge;
-                // Could check if it's a back edge 
-                if (possibleBottleneck < minimumWeight){
-                    minimumWeight = possibleBottleneck;
-                }
+                minimumWeight = Math.min(possibleBottleneck, minimumWeight);
+            }
 
-            }
-            catch (Exception e){
-                break;
-            }
+
         }
         return minimumWeight;
 
@@ -148,12 +188,27 @@ public class FordFulkerson {
 //        WGraph g = new WGraph(file);
 //        System.out.println(fordfulkerson(g));
 
-        String path = "C:\\Users\\Kalvin\\Documents\\GitHub\\COMP251\\Assignement3\\ff2.txt";
+//        String path = "C:\\Users\\Kalvin\\Documents\\GitHub\\COMP251\\Assignement3\\ff2.txt";
+//        WGraph g = new WGraph(path);
+//         System.out.println(fordfulkerson(g));
+//        System.out.println(pathDFS(0,5,g));
+
+
+//        String path = "C:\\Users\\Kalvin\\Documents\\GitHub\\COMP251\\Assignement3\\ff2.txt";
+//        WGraph g = new WGraph(path);
+//        System.out.println(fordfulkerson(g));
+
+        String path1 = "C:\\Users\\Kalvin\\Documents\\GitHub\\COMP251\\Assignement3\\ff2.txt";
+        WGraph g1 = new WGraph(path1);
+//         System.out.println(fordfulkerson(g1));
+        System.out.println(pathDFS(0,5,g1));
+
+
+        String path = "C:\\Users\\Kalvin\\Documents\\GitHub\\COMP251\\Assignement3\\test1q3.txt";
         WGraph g = new WGraph(path);
 //         System.out.println(fordfulkerson(g));
         System.out.println(pathDFS(0,5,g));
-
-
+    }
 
 //        WGraph g = new WGraph();
 //        g.setSource(0);
@@ -171,6 +226,6 @@ public class FordFulkerson {
 //        Arrays.stream(edges).forEach(e->g.addEdge(e));
 //        System.out.println(FordFulkerson.pathDFS(0, 5, g));
 
-    }
+
 }
 
