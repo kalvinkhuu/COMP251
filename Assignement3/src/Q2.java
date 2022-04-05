@@ -15,9 +15,8 @@ public class Q2 {
 
         ArrayList<Integer> planetsWithNoIn = new ArrayList<>();
         ArrayList<Integer> totalNumberOfTransport = new ArrayList<>();
-
-//        int currPlanet = 0;
-//        int numberOfTransport = 0;
+        boolean twoDifferentPlanets = false;
+        int planet = -1;
         int numberOfNode = graph.size();
         int[] inDegree = new int[numberOfNode];
         for (int i = 0; i < numberOfNode; i++) {
@@ -28,24 +27,40 @@ public class Q2 {
 
         for (int i = 0; i < numberOfNode; i++) {
             if(inDegree[i] == 0){
-                planetsWithNoIn.add(i);
+                if (planet == -1){
+                    planet = location[i];
+                    planetsWithNoIn.add(i);
+                }
+                if (location[i] != planet){
+                    twoDifferentPlanets = true;
+                    planetsWithNoIn.add(i);
+                    break;
+                }
             }
         }
 
-        for (Integer startPlanet: planetsWithNoIn) {
-            int currPlanet = location[startPlanet];
-            totalNumberOfTransport.add(ringHelper(graph, location, inDegree, startPlanet,
-                    numberOfNode, currPlanet));
-        }
-
-        int minimum = numberOfNode + 1;
-        for (int numTransport: totalNumberOfTransport) {
-            if (numTransport < minimum){
-                minimum = numTransport;
+        if (twoDifferentPlanets){
+            for (Integer startPlanet: planetsWithNoIn) {
+                int currPlanet = location[startPlanet];
+                totalNumberOfTransport.add(ringHelper(graph, location, inDegree, startPlanet,
+                        numberOfNode, currPlanet));
             }
+
+            int minimum = numberOfNode + 1;
+            for (int numTransport: totalNumberOfTransport) {
+                if (numTransport < minimum){
+                    minimum = numTransport;
+                }
+            }
+
+            return minimum;
+        }
+        else {
+            return ringHelper(graph, location, inDegree, planetsWithNoIn.get(0), numberOfNode,
+                    location[planetsWithNoIn.get(0)]);
         }
 
-        return minimum;
+
     }
 
     private static int ringHelper(Hashtable<Integer, ArrayList<Integer>> graph, int[] location, int[] inDegree,
@@ -88,66 +103,68 @@ public class Q2 {
             }
 
         }
+        System.out.println(numberOfTransport);
         return numberOfTransport;
     }
 
 
     public static void main(String[] args) {
 
-//        Hashtable<Integer, ArrayList<Integer>> graph = new Hashtable<Integer, ArrayList<Integer>>();
-//        graph.put(4, new ArrayList<Integer>());
-//        graph.put(3, new ArrayList<Integer>());
-//        graph.put(2, new ArrayList<Integer>(Arrays.asList(3,4)));
-//        graph.put(1, new ArrayList<Integer>(Arrays.asList(3,4)));
-//        graph.put(0, new ArrayList<Integer>(Arrays.asList(1,2)));
-//        int[] location = {1,2,1,2,1};
+        Hashtable<Integer, ArrayList<Integer>> graph = new Hashtable<Integer, ArrayList<Integer>>();
+        graph.put(4, new ArrayList<Integer>());
+        graph.put(3, new ArrayList<Integer>());
+        graph.put(2, new ArrayList<Integer>(Arrays.asList(3,4)));
+        graph.put(1, new ArrayList<Integer>(Arrays.asList(3,4)));
+        graph.put(0, new ArrayList<Integer>(Arrays.asList(1,2)));
+        int[] location = {1,2,1,2,1};
+
+        int result = rings(graph, location);
+        System.out.println(result);
+
+//        Hashtable<Integer, ArrayList<Integer>> graph1 = new Hashtable<Integer, ArrayList<Integer>>();
+//        graph1.put(4, new ArrayList<Integer>());
+//        graph1.put(3, new ArrayList<Integer>(Arrays.asList(4)));
+//        graph1.put(2, new ArrayList<Integer>(Arrays.asList(4)));
+//        graph1.put(1, new ArrayList<Integer>(Arrays.asList(4)));
+//        graph1.put(0, new ArrayList<Integer>(Arrays.asList(4)));
+//        int[] location1 = {2,2,1,2,2};
 //
-//        int result = rings(graph, location);
-//        System.out.println(result);
-
-        Hashtable<Integer, ArrayList<Integer>> graph1 = new Hashtable<Integer, ArrayList<Integer>>();
-        graph1.put(4, new ArrayList<Integer>());
-        graph1.put(3, new ArrayList<Integer>(Arrays.asList(4)));
-        graph1.put(2, new ArrayList<Integer>(Arrays.asList(4)));
-        graph1.put(1, new ArrayList<Integer>(Arrays.asList(4)));
-        graph1.put(0, new ArrayList<Integer>(Arrays.asList(4)));
-        int[] location1 = {2,2,2,2,2};
-
-        int result1 = rings(graph1, location1);
-        System.out.println(result1);
-
-        Hashtable<Integer, ArrayList<Integer>> graph2 = new Hashtable<Integer, ArrayList<Integer>>();
-        graph2.put(6, new ArrayList<Integer>());
-        graph2.put(5, new ArrayList<Integer>(Arrays.asList(3,4)));
-        graph2.put(4, new ArrayList<Integer>(Arrays.asList(6)));
-        graph2.put(3, new ArrayList<Integer>(Arrays.asList(6)));
-        graph2.put(2, new ArrayList<Integer>(Arrays.asList(3)));
-        graph2.put(1, new ArrayList<Integer>(Arrays.asList(2,5)));
-        graph2.put(0, new ArrayList<Integer>(Arrays.asList(1,2)));
-        int[] location2 = {1,2,1,2,1,2,1};
-
-        int result2 = rings(graph2, location2);
-        System.out.println(result2);
-
-        Hashtable<Integer, ArrayList<Integer>> graph3 = new Hashtable<Integer, ArrayList<Integer>>();
-        graph3.put(6, new ArrayList<Integer>());
-        graph3.put(5, new ArrayList<Integer>(Arrays.asList(3,4)));
-        graph3.put(4, new ArrayList<Integer>(Arrays.asList(6)));
-        graph3.put(3, new ArrayList<Integer>(Arrays.asList(6)));
-        graph3.put(2, new ArrayList<Integer>(Arrays.asList(3)));
-        graph3.put(1, new ArrayList<Integer>(Arrays.asList(2,5)));
-        graph3.put(0, new ArrayList<Integer>(Arrays.asList(1,2)));
-        int[] location3 = {2,2,2,2,1,2,1};
-
-        int result3 = rings(graph3, location3);
-        System.out.println(result3);
-
-        Hashtable<Integer, ArrayList<Integer>> graph4 = new Hashtable<Integer, ArrayList<Integer>>();
-        graph4.put(0, new ArrayList<Integer>());
-        int[] location4 = {2};
-
-        int result4 = rings(graph4, location4);
-        System.out.println(result4);
+//        int result1 = rings(graph1, location1);
+//        System.out.println("\n");
+//        System.out.println(result1);
+//
+//        Hashtable<Integer, ArrayList<Integer>> graph2 = new Hashtable<Integer, ArrayList<Integer>>();
+//        graph2.put(6, new ArrayList<Integer>());
+//        graph2.put(5, new ArrayList<Integer>(Arrays.asList(3,4)));
+//        graph2.put(4, new ArrayList<Integer>(Arrays.asList(6)));
+//        graph2.put(3, new ArrayList<Integer>(Arrays.asList(6)));
+//        graph2.put(2, new ArrayList<Integer>(Arrays.asList(3)));
+//        graph2.put(1, new ArrayList<Integer>(Arrays.asList(2,5)));
+//        graph2.put(0, new ArrayList<Integer>(Arrays.asList(1,2)));
+//        int[] location2 = {1,2,1,2,1,2,1};
+//
+//        int result2 = rings(graph2, location2);
+//        System.out.println(result2);
+//
+//        Hashtable<Integer, ArrayList<Integer>> graph3 = new Hashtable<Integer, ArrayList<Integer>>();
+//        graph3.put(6, new ArrayList<Integer>());
+//        graph3.put(5, new ArrayList<Integer>(Arrays.asList(3,4)));
+//        graph3.put(4, new ArrayList<Integer>(Arrays.asList(6)));
+//        graph3.put(3, new ArrayList<Integer>(Arrays.asList(6)));
+//        graph3.put(2, new ArrayList<Integer>(Arrays.asList(3)));
+//        graph3.put(1, new ArrayList<Integer>(Arrays.asList(2,5)));
+//        graph3.put(0, new ArrayList<Integer>(Arrays.asList(1,2)));
+//        int[] location3 = {2,2,2,2,1,2,1};
+//
+//        int result3 = rings(graph3, location3);
+//        System.out.println(result3);
+//
+//        Hashtable<Integer, ArrayList<Integer>> graph4 = new Hashtable<Integer, ArrayList<Integer>>();
+//        graph4.put(0, new ArrayList<Integer>());
+//        int[] location4 = {2};
+//
+//        int result4 = rings(graph4, location4);
+//        System.out.println(result4);
 
 
     }
